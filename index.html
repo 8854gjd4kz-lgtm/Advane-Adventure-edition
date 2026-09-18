@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Advanced Adventure Edition</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#111;color:#fff;font-family:system-ui,sans-serif}
+canvas{display:block;width:100vw;height:100vh;background:linear-gradient(#78c8ff 0 55%,#4d9a45 55%)}
+#hud{position:fixed;top:12px;left:12px;right:12px;display:flex;justify-content:space-between;font-weight:800;text-shadow:0 2px 3px #000;pointer-events:none}
+#controls{position:fixed;left:0;right:0;bottom:18px;display:flex;justify-content:space-between;padding:0 22px;pointer-events:none}
+button{pointer-events:auto;border:2px solid #fff;background:#0008;color:#fff;border-radius:50%;width:68px;height:68px;font-size:28px;font-weight:800}
+#jump{width:82px;height:82px}
+</style>
+</head>
+<body>
+<div id="hud"><span>ADVANCED ADVENTURE EDITION</span><span id="score">0</span></div>
+<canvas id="game"></canvas>
+<div id="controls"><div><button id="left">◀</button><button id="right">▶</button></div><button id="jump">▲</button></div>
+<script>
+const c=document.getElementById('game'),x=c.getContext('2d'),scoreEl=document.getElementById('score');
+let W,H,score=0,keys={left:false,right:false},p={x:80,y:0,w:34,h:42,vx:0,vy:0,on:false};
+let platforms=[],coins=[],goal={x:0,y:0,w:45,h:70};
+function resize(){W=c.width=innerWidth*devicePixelRatio;H=c.height=innerHeight*devicePixelRatio;x.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);W=innerWidth;H=innerHeight;reset()} addEventListener('resize',resize);
+function reset(){score=0;p={x:60,y:H-130,w:34,h:42,vx:0,vy:0,on:false};platforms=[{x:0,y:H-65,w:W,h:65},{x:W*.22,y:H-160,w:130,h:18},{x:W*.48,y:H-245,w:140,h:18},{x:W*.75,y:H-335,w:130,h:18}];coins=[{x:W*.27,y:H-205},{x:W*.53,y:H-290},{x:W*.8,y:H-380}];goal={x:W*.9,y:H-405,w:35,h:70};scoreEl.textContent=score}
+function jump(){if(p.on){p.vy=-12;p.on=false}}
+function bind(id,prop){let b=document.getElementById(id);['touchstart','mousedown'].forEach(e=>b.addEventListener(e,a=>{a.preventDefault();keys[prop]=true}));['touchend','mouseup','mouseleave'].forEach(e=>b.addEventListener(e,a=>{a.preventDefault();keys[prop]=false}))}
+bind('left','left');bind('right','right');document.getElementById('jump').addEventListener('touchstart',e=>{e.preventDefault();jump()});document.getElementById('jump').addEventListener('mousedown',e=>{e.preventDefault();jump()});
+addEventListener('keydown',e=>{if(e.key==='ArrowLeft')keys.left=true;if(e.key==='ArrowRight')keys.right=true;if(e.key===' '||e.key==='ArrowUp')jump()});addEventListener('keyup',e=>{if(e.key==='ArrowLeft')keys.left=false;if(e.key==='ArrowRight')keys.right=false});
+function loop(){requestAnimationFrame(loop);p.vx=(keys.right?4:0)-(keys.left?4:0);p.vy+=.55;p.x+=p.vx;p.y+=p.vy;p.on=false;
+for(const q of platforms){if(p.x+p.w>q.x&&p.x<q.x+q.w&&p.y+p.h>q.y&&p.y+p.h<q.y+q.h+15&&p.vy>=0){p.y=q.y-p.h;p.vy=0;p.on=true}}
+for(let i=coins.length-1;i>=0;i--){let q=coins[i];if(p.x<q.x+14&&p.x+p.w>q.x-14&&p.y<q.y+14&&p.y+p.h>q.y-14){coins.splice(i,1);score+=10;scoreEl.textContent=score}}
+if(p.x>goal.x-10&&p.x<goal.x+goal.w+10&&p.y+p.h>goal.y){score+=100;scoreEl.textContent=score;reset()}
+if(p.x<0)p.x=0;if(p.x>W-p.w)p.x=W-p.w;if(p.y>H+100)reset();
+x.clearRect(0,0,W,H);x.fillStyle='#78c8ff';x.fillRect(0,0,W,H);x.fillStyle='#4d9a45';x.fillRect(0,H*.55,W,H*.45);
+x.fillStyle='#8b5a2b';for(const q of platforms)x.fillRect(q.x,q.y,q.w,q.h);
+x.fillStyle='#ffd700';for(const q of coins){x.beginPath();x.arc(q.x,q.y,11,0,7);x.fill()}
+x.fillStyle='#fff';x.fillRect(goal.x,goal.y,goal.w,goal.h);x.fillStyle='#e33';x.fillRect(goal.x+35,goal.y+5,35,25);
+x.fillStyle='#245';x.fillRect(p.x,p.y,p.w,p.h);x.fillStyle='#f5c6a5';x.beginPath();x.arc(p.x+p.w/2,p.y-7,12,0,7);x.fill()
+}
+resize();loop();
+</script>
+</body></html>
