@@ -18,4 +18,4 @@ GitHub Pages URL:
 https://8854gjd4kz-lgtm.github.io/Advane-Adventure-edition/
 
 ## Tech
-The game is a browser build using Three.js from jsDelivr.
+The game is a browser build using Three.js from jsDelivr.\n\n## Enhanced 3D update\n- Procedural 3D character models for hero, enemies, bosses and peaceful creatures\n- Animated idle, walk, attack and hit motions\n- Expanded biome scenery: forests, crystals, volcanic terrain, snow, coast water, rocks, paths, landmarks and clouds\n- Third-person orbit camera with touch D-pad camera rotation\n- Mobile movement D-pad retained\n- iPhone/Safari friendly rendering with capped pixel ratio\n
